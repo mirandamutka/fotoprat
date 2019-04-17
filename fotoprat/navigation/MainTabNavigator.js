@@ -7,9 +7,11 @@ import { createMaterialTopTabNavigator } from 'react-navigation';
 import TabBarIcon from '../components/TabBarIcon';
 import FeedScreen from '../screens/FeedScreen';
 import CameraScreen from '../screens/CameraScreen';
+import PhotoPreviewScreen from '../screens/PhotoPreviewScreen';
+import SplashScreen from '../screens/SplashScreen';
 
 const FeedStack = createStackNavigator({
-  Home: FeedScreen,
+  Home: FeedScreen
 });
 
 FeedStack.navigationOptions = {
@@ -28,6 +30,7 @@ FeedStack.navigationOptions = {
 
 const CameraStack = createStackNavigator({
   Camera: CameraScreen,
+  PhotoPreview: PhotoPreviewScreen
 });
 
 CameraStack.navigationOptions = {
@@ -42,8 +45,9 @@ CameraStack.navigationOptions = {
 
 export default createMaterialTopTabNavigator({
   FeedStack,
-  CameraStack
+  CameraStack,
 },
+
 {
   tabBarOptions: {
     activeTintColor: '#DC8231',

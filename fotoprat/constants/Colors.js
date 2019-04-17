@@ -12,5 +12,6 @@ export default {
   noticeBackground: tintColor,
   noticeText: '#fff',
   purpleColor: '#B2A9C0',
-  whiteColor: '#F2F2F2'
+  whiteColor: '#F2F2F2',
+  orangeColor: '#F2994A'
 };

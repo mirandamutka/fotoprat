@@ -28,7 +28,36 @@ export default StyleSheet.create({
     marginBottom: 20
   },
 
+  captureButtonContainer: {
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+    paddingBottom: 20
+  },
+
+  modalContainer: { 
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    flex: 1
+  },
+
   // BUTTON STYLES
+
+  cameraButton: {
+    backgroundColor: Colors.orangeColor,
+    height: 109,
+    width: 109,
+    borderRadius: 50,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    alignItems: 'center'
+  },
 
   roundButton: {
     backgroundColor: Colors.purpleColor,
@@ -67,6 +96,20 @@ export default StyleSheet.create({
 
   rectangularButton: {
     backgroundColor: Colors.purpleColor,
+    width: 147,
+    height: 36,
+    borderRadius: 5,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+  },
+  rectangularOrangeButton: {
+    backgroundColor: Colors.orangeColor,
     width: 135,
     height: 35,
     borderRadius: 5,
@@ -85,6 +128,23 @@ export default StyleSheet.create({
     paddingTop: '7%',
     color: Colors.whiteColor,
     fontWeight: 'bold'
+  },
+
+  smallCircle: {
+    backgroundColor: 'white',
+    width: 45,
+    height: 45,
+    borderRadius: 50,
+    position: 'relative',
+    bottom: 4,
+    right: 2
+  },
+
+  // TEXT
+
+  whiteText: { 
+    color: 'white', 
+    paddingBottom: 5 
   },
 
   // ETC

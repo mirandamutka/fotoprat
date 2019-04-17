@@ -1,9 +1,22 @@
 import React, { Component } from 'react';
-import { TouchableOpacity, Text, Platform } from 'react-native';
+import { View, TouchableOpacity, Text, Platform } from 'react-native';
 import { Icon } from 'expo';
 
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
+
+export class RecordButton extends Component {
+  render() {
+    return (
+      <TouchableOpacity
+        style={style.roundButton}
+        onPress={this.props.function}
+      >
+        <View style={style.smallCircle} />
+      </TouchableOpacity>
+    )
+  }
+}
 
 export class RoundButton extends Component {
 
@@ -15,10 +28,10 @@ export class RoundButton extends Component {
     return (
       <TouchableOpacity
         style={
-          this.state.pressed 
-          ? style.roundPause
-          : style.roundButton
-        
+          this.state.pressed
+            ? style.roundPause
+            : style.roundButton
+
         }
         onPress={() => this.setState({ pressed: !this.state.pressed })}
       >{this.state.pressed === false ?
