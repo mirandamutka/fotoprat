@@ -36,9 +36,11 @@ export default StyleSheet.create({
   },
 
   modalContainer: { 
+    paddingTop: 100,
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    flex: 1
+    flex: 1,
+    flexDirection: 'row'
   },
 
   // BUTTON STYLES
@@ -60,7 +62,7 @@ export default StyleSheet.create({
   },
 
   roundButton: {
-    backgroundColor: Colors.purpleColor,
+    backgroundColor: Colors.orangeColor,
     borderRadius: 50,
     height: 63,
     width: 63,
@@ -77,7 +79,7 @@ export default StyleSheet.create({
     paddingLeft: 5
   },
   roundPause: {
-    backgroundColor: Colors.purpleColor,
+    backgroundColor: Colors.orangeColor,
     borderRadius: 50,
     height: 63,
     width: 63,
@@ -95,25 +97,11 @@ export default StyleSheet.create({
   },
 
   rectangularButton: {
-    backgroundColor: Colors.purpleColor,
+    backgroundColor: Colors.orangeColor,
     width: 147,
     height: 36,
     borderRadius: 5,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-  rectangularOrangeButton: {
-    backgroundColor: Colors.orangeColor,
-    width: 135,
-    height: 35,
-    borderRadius: 5,
-    elevation: 3,
+    elevation: 1,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -125,7 +113,7 @@ export default StyleSheet.create({
 
   buttonText: {
     textAlign: 'center',
-    paddingTop: '7%',
+    paddingTop: '6%',
     color: Colors.whiteColor,
     fontWeight: 'bold'
   },
@@ -147,6 +135,13 @@ export default StyleSheet.create({
     paddingBottom: 5 
   },
 
+  recordText: {
+    position: 'absolute',
+    top: 40,
+    left: 80,
+    fontSize: 16
+  },
+
   // ETC
 
   divider: {
@@ -155,5 +150,11 @@ export default StyleSheet.create({
     borderBottomColor: '#E0E0E0',
     alignSelf: 'center',
     marginBottom: 20
+  },
+
+  verticalDivider: {
+    height: 400,
+    width: 2,
+    backgroundColor: Colors.whiteColor,
   }
 });

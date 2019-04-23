@@ -43,17 +43,36 @@ export default class FeedScreen extends React.Component {
               Alert.alert('Modal has been closed.');
             }}>
             <ImageBackground
-              source={require('../assets/images/splashbg.png')}
-              style={{
-                width: '100%',
-                height: '100%'
-              }}
-              resizeMode={'cover'}
-            >
+            source={require('../assets/images/splashbg.png')}
+            style={{
+              flex: 1,
+              width: '100%',
+              height: '100%',
+            }}>
               <View style={style.modalContainer}>
                 <TouchableOpacity
+                  onPress={() => this.setState({ modalVisible: !this.state.modalVisible })}
+                ><Icon.Ionicons
+                name={
+                  Platform.OS === 'ios'
+                    ? 'ios-images'
+                    : 'md-images'
+                }
+                size={60}
+                color={Colors.orangeColor}
+                style={{ alignSelf: 'center', paddingTop: 20 }}
+              />
+                  <Text style={[
+                    style.buttonText, 
+                    { 
+                      color: Colors.orangeColor,
+                      paddingTop: '3%'
+                    }
+                    ]}>SE FLÖDE</Text>
+                </TouchableOpacity>
+                <View style={style.verticalDivider} />
+                <TouchableOpacity
                   onPress={this.moveToCamera}
-                  style={style.cameraButton}
                 >
                   <Icon.Ionicons
                     name={
@@ -62,15 +81,10 @@ export default class FeedScreen extends React.Component {
                         : 'md-camera'
                     }
                     size={75}
-                    color={Colors.whiteColor}
+                    color={Colors.orangeColor}
                     style={{ alignSelf: 'center', paddingTop: 15 }}
                   />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => this.setState({ modalVisible: !this.state.modalVisible })}
-                  style={style.rectangularOrangeButton}
-                >
-                  <Text style={style.buttonText}>SE FLÖDE</Text>
+                  <Text style={[style.buttonText, { color: Colors.orangeColor}]}>TA BILD</Text>
                 </TouchableOpacity>
               </View>
               <Image

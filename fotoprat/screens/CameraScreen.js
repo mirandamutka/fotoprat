@@ -33,7 +33,7 @@ export default class CameraScreen extends React.Component {
 
       this.setState({ photo })
     }
-    await this.props.navigation.navigate('PhotoPreview', { photo: this.state.photo })
+    await this.props.navigation.navigate('Record', { photo: this.state.photo })
     this.setState({ processing: !this.state.processing })
   };
 
