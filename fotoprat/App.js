@@ -4,6 +4,18 @@ import { AppLoading, Asset, Font, Icon } from 'expo';
 
 import { RoundButton, RectangularButton } from './components/Buttons';
 import AppNavigator from './navigation/AppNavigator';
+import * as firebase from 'firebase';
+
+const config = {
+    apiKey: 'AIzaSyBjFEsO3tHzIO9qd1ZuBII7geWgSKG4bPk',
+    authDomain: 'fotoprat-7256a.firebaseapp.com',
+    databaseURL: 'https://fotoprat-7256a.firebaseio.com',
+    projectId: 'fotoprat-7256a',
+    storageBucket: 'fotoprat-7256a.appspot.com',
+    messagingSenderId: '730940702005'
+};
+
+firebase.initializeApp(config);
 
 export default class App extends React.Component {
     state = {

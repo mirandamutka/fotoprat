@@ -16,6 +16,14 @@ export default StyleSheet.create({
     width: '100%',
   },
 
+  onboardingContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingTop: 100,
+    backgroundColor: Colors.orangeColor
+  },
+
   roundButtonContainer: {
     alignItems: 'center',
     position: 'relative',
@@ -35,7 +43,7 @@ export default StyleSheet.create({
     paddingBottom: 20
   },
 
-  modalContainer: { 
+  modalContainer: {
     paddingTop: 100,
     alignItems: 'center',
     justifyContent: 'space-evenly',
@@ -97,9 +105,9 @@ export default StyleSheet.create({
   },
 
   rectangularButton: {
-    backgroundColor: Colors.orangeColor,
     width: 147,
     height: 36,
+    marginTop: 20,
     borderRadius: 5,
     elevation: 1,
     shadowColor: "#000",
@@ -130,9 +138,9 @@ export default StyleSheet.create({
 
   // TEXT
 
-  whiteText: { 
-    color: 'white', 
-    paddingBottom: 5 
+  whiteText: {
+    color: 'white',
+    paddingBottom: 5
   },
 
   recordText: {
@@ -140,6 +148,18 @@ export default StyleSheet.create({
     top: 40,
     left: 80,
     fontSize: 16
+  },
+
+  registerText: {
+    textAlign: 'center',
+    color: Colors.whiteColor,
+    fontWeight: 'bold'
+  },
+
+  errorText: {
+    color: 'red',
+    padding: 5,
+    fontStyle: 'italic'
   },
 
   // ETC
@@ -156,5 +176,17 @@ export default StyleSheet.create({
     height: 400,
     width: 2,
     backgroundColor: Colors.whiteColor,
-  }
+  },
+
+  onboardInput: {
+    height: 40,
+    width: '90%',
+    borderBottomColor: Colors.darkOrangeColor,
+    borderBottomWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    marginVertical: 20,
+    color: Colors.whiteColor
+  },
+
 });

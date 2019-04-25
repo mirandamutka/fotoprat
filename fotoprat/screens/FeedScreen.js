@@ -11,11 +11,14 @@ import {
   Platform
 } from 'react-native';
 import { Icon } from 'expo';
+import * as firebase from 'firebase';
 
 import Posts from '../components/Posts';
 
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
+
+let photo = [];
 
 export default class FeedScreen extends React.Component {
   static navigationOptions = {
@@ -23,8 +26,20 @@ export default class FeedScreen extends React.Component {
   };
 
   state = {
-    modalVisible: true
+    modalVisible: true,
+    posts: photo
   };
+
+  componentDidMount() {
+
+    that = this
+
+    firebase.database().ref('/posts').on('child_added', function (photo){
+      var newData = [...that.state.posts]
+      newData.push(photo)
+      that.setState({ posts: newData })
+    })
+  }
 
   moveToCamera = () => {
     this.setState({ modalVisible: !this.state.modalVisible })
@@ -32,6 +47,7 @@ export default class FeedScreen extends React.Component {
   };
 
   render() {
+    console.warn(photo)
     return (
       <ScrollView>
         {this.state.modalVisible ?
@@ -88,7 +104,7 @@ export default class FeedScreen extends React.Component {
                 </TouchableOpacity>
               </View>
               <Image
-                source={require('../assets/images/logo.png')}
+                source={require('../assets/images/logo_grey.png')}
                 style={{
                   height: 120,
                   width: 100,
@@ -102,7 +118,7 @@ export default class FeedScreen extends React.Component {
           <View>
             <View style={style.headerContainer}>
               <Image
-                source={require('../assets/images/logo.png')}
+                source={require('../assets/images/logo_grey.png')}
                 style={{
                   height: 120,
                   width: 100,
@@ -112,8 +128,8 @@ export default class FeedScreen extends React.Component {
               />
             </View>
             <FlatList
-              data={[{ key: 'a' }, { key: 'b' }]}
-              renderItem={({ item }) => <Posts />}
+              data={this.state.posts}
+              renderItem={ photo => <Text>{photo.val().photo}</Text>}
             />
           </View>
         }

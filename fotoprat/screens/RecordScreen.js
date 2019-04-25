@@ -8,6 +8,7 @@ import {
   Platform
 } from 'react-native';
 import { Audio, Permissions, Icon, FileSystem } from 'expo';
+import * as firebase from 'firebase';
 
 import { RecordButton } from '../components/Buttons';
 import Colors from '../constants/Colors';
@@ -126,8 +127,9 @@ class RecordScreen extends Component {
     } catch (error) {
       // Do nothing -- we are already unloaded.
     }
-    const info = await FileSystem.getInfoAsync(this.recording.getURI());
-    console.log(`FILE INFO: ${JSON.stringify(info)}`);
+    const photo = this.props.navigation.getParam('photo')
+    const soundInfo = await FileSystem.getInfoAsync(this.recording.getURI());
+    console.log(`FILE INFO: ${JSON.stringify(soundInfo)}`);
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -147,12 +149,17 @@ class RecordScreen extends Component {
     this.setState({
       isLoading: false,
     });
+      var key = firebase.database().ref('/posts').push().key
+      firebase.database().ref('/posts').child(key).set({ photo: photo, sound: soundInfo })
   };
 
   onRecordPressed = () => {
     if (this.state.isRecording) {
       this.setState({ buttonPressed: false })
       this.stopRecordingAndEnablePlayback();
+      this.props.navigation.navigate('Home', {
+        photo: this.props.navigation.getParam('photo')
+      })
     } else {
       this.setState({ buttonPressed: true })
       this.stopPlaybackAndStartRecording();
@@ -236,7 +243,7 @@ class RecordScreen extends Component {
               :
               <TouchableOpacity
                 style={style.roundButton}
-                onPress={this.onRecordPressed}
+                onPress={() => this.onRecordPressed(photo)}
               >
                 <Icon.Ionicons
                   name={

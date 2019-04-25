@@ -64,7 +64,9 @@ export class RectangularButton extends Component {
 
   render() {
     return (
-      <TouchableOpacity style={style.rectangularButton}>
+      <TouchableOpacity
+      onPress={this.props.pressed}
+      style={[style.rectangularButton, {backgroundColor: this.props.color}]}>
         <Text style={style.buttonText}>
           {this.props.buttonText}
         </Text>

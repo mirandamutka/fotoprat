@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 
 import { RectangularButton, RoundButton } from './Buttons';
 
 import style from '../constants/Style';
+import Colors from '../constants/Colors';
 
 class Posts extends Component {
 
@@ -14,21 +15,25 @@ class Posts extends Component {
     return (
       <View style={{ marginBottom: 10 }}>
 
-        <View style={{
-          width: '100%',
-          height: 300,
-          borderWidth: 1,
-          borderColor: '#E0E0E0',
-          alignSelf: 'center'
-        }} />
+        <Image
+          source={this.props.photo}
+          style={{
+            width: '100%',
+            height: 300,
+            borderWidth: 1,
+            borderColor: '#E0E0E0',
+            alignSelf: 'center'
+          }} />
         <View style={style.roundButtonContainer}>
           <RoundButton />
         </View>
         <View style={style.rectButtonContainer}>
           <RectangularButton
+            color={Colors.orangeColor}
             buttonText={'DELA'}
           />
           <RectangularButton
+            color={Colors.orangeColor}
             buttonText={'SPARA'}
           />
         </View>

@@ -25,16 +25,18 @@ export default class CameraScreen extends React.Component {
   };
 
   snap = async () => {
-    this.setState({ processing: !this.state.processing })
     if (this.camera) {
       // console.log('')
 
-      const photo = await this.camera.takePictureAsync()
+      let photo = await new Promise(async resolve => {
+        await this.camera.takePictureAsync({onPictureSaved : resolve});
+        this.camera.pausePreview();
+        })
+        this.camera.resumePreview();
 
       this.setState({ photo })
     }
     await this.props.navigation.navigate('Record', { photo: this.state.photo })
-    this.setState({ processing: !this.state.processing })
   };
 
   prepareRatio = async () => {
@@ -70,9 +72,6 @@ export default class CameraScreen extends React.Component {
               flexDirection: 'row',
             }}>
             <View style={style.captureButtonContainer}>
-              {this.state.processing &&
-                <Text style={style.whiteText}>Taking picture...</Text>
-              }
               <RecordButton
                 function={this.snap}
               />
