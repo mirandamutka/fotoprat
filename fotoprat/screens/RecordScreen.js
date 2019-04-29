@@ -112,11 +112,41 @@ class RecordScreen extends Component {
     recording.setOnRecordingStatusUpdate(this.recordingStatus);
 
     this.recording = recording;
-    await this.recording.startAsync(); // Will call this._updateScreenForRecordingStatus to update the screen.
+    await this.recording.startAsync();
     this.setState({
       isLoading: false,
     });
   };
+
+
+  uploadImageAsync = async (uri, uid) => {
+    // Why are we using XMLHttpRequest? See:
+    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function(e) {
+        console.log(e);
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
+    let name = new Date().getTime() + "-media.jpg"
+    const ref = firebase
+      .storage()
+      .ref(uid)
+      .child('images/' + name);
+    const snapshot = await ref.put(blob);
+  
+    // We're done with the blob, close and release it
+    blob.close();
+  
+    return await snapshot.ref.getDownloadURL();
+  }
 
   async stopRecordingAndEnablePlayback() {
     this.setState({
@@ -149,8 +179,16 @@ class RecordScreen extends Component {
     this.setState({
       isLoading: false,
     });
-      var key = firebase.database().ref('/posts').push().key
-      firebase.database().ref('/posts').child(key).set({ photo: photo, sound: soundInfo })
+    
+    firebase.auth().onAuthStateChanged((user) => {
+      let uri = photo.uri
+      let uid = user.uid
+      if (uid) {
+        this.uploadImageAsync(uri, uid);
+      } else {
+        // User not logged in or has just logged out.
+      }
+    });
   };
 
   onRecordPressed = () => {
