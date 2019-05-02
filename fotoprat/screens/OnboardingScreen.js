@@ -34,25 +34,28 @@ class OnboardingScreen extends Component {
     }
     catch (error) {
       console.log(error.toString())
+        (<View style={{ flex: 1 }}>
+          <Text>{error}</Text>
+        </View>)
+      this.props.navigation.navigate('Onboarding')
     }
   };
 
-  logInUser = (email, password) => {
+  logInUser = async (email, password) => {
     try {
       firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
         console.log(user)
       })
       this.setState({ modalVisible: false })
-      this.props.navigation.navigate('Home')
+      await this.props.navigation.navigate('Home')
     }
     catch (error) {
-      console.log(error.toString())
+      (
+        <View style={{ flex: 1 }}>
+          <Text>{error}</Text>
+        </View>
+      )
     }
-  };
-
-  onSubmit = () => {
-    this.setState({ modalVisible: false })
-    this.props.navigation.navigate('Home')
   };
 
   render() {
@@ -95,10 +98,10 @@ class OnboardingScreen extends Component {
                 />
                 <KeyboardAvoidingView
                   behavior="position" keyboardVerticalOffset={-550}
-                style={{
-                  flex: 1,
-                  justifyContent: 'flex-end'
-                }}>
+                  style={{
+                    flex: 1,
+                    justifyContent: 'flex-end'
+                  }}>
                   <Image
                     source={require('../assets/images/logo_big.png')}
                     style={{

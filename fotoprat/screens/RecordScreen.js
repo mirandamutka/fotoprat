@@ -120,14 +120,12 @@ class RecordScreen extends Component {
 
 
   uploadImageAsync = async (uri, uid) => {
-    // Why are we using XMLHttpRequest? See:
-    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
+      xhr.onload = function () {
         resolve(xhr.response);
       };
-      xhr.onerror = function(e) {
+      xhr.onerror = function (e) {
         console.log(e);
         reject(new TypeError('Network request failed'));
       };
@@ -135,17 +133,37 @@ class RecordScreen extends Component {
       xhr.open('GET', uri, true);
       xhr.send(null);
     });
-    let name = new Date().getTime() + "-media.jpg"
-    const ref = firebase
-      .storage()
-      .ref(uid)
-      .child('images/' + name);
-    const snapshot = await ref.put(blob);
-  
-    // We're done with the blob, close and release it
+    let date = () => {
+      today = new Date();
+      let yyyy = today.getFullYear();
+      let dd = today.getDate();
+      let mm = today.getMonth()+1;
+      let hh = today.getHours();
+      let mn = today.getMinutes();
+      let ss = today.getSeconds();
+      
+      if(dd<10) dd='0'+dd;
+      if(mm<10) mm='0'+mm;
+      if(hh<10) hh='0'+hh;
+      if(mn<10) mn='0'+mn;
+      if(ss<10) ss='0'+ss;
+      return (yyyy+mm+dd+hh+mn+ss);
+      };
+    let name = date() + '-media.jpg'
+    const imgRef = firebase.storage().ref(uid).child('images/' + name);
+    const uploadTask = await imgRef.put(blob);
+
     blob.close();
-  
-    return await snapshot.ref.getDownloadURL();
+
+    // Handle successful uploads on complete
+    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+    imgRef.getDownloadURL().then(function(url) {
+      firebase.database().ref(uid).child('posts/').push({
+        imgURL: url
+    });
+  }, function(error){
+      console.log(error);
+  });
   }
 
   async stopRecordingAndEnablePlayback() {
@@ -179,7 +197,7 @@ class RecordScreen extends Component {
     this.setState({
       isLoading: false,
     });
-    
+
     firebase.auth().onAuthStateChanged((user) => {
       let uri = photo.uri
       let uid = user.uid

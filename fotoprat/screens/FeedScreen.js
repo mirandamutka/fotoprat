@@ -8,7 +8,8 @@ import {
   Modal,
   Text,
   TouchableOpacity,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import { Icon } from 'expo';
 import * as firebase from 'firebase';
@@ -18,6 +19,8 @@ import Posts from '../components/Posts';
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
 
+let imgURLs = []
+
 export default class FeedScreen extends React.Component {
   static navigationOptions = {
     header: null
@@ -25,22 +28,39 @@ export default class FeedScreen extends React.Component {
 
   state = {
     modalVisible: true,
-    photo: []
+    imgSource: []
   };
 
   componentDidMount = () => {
-
-    let that = this
-
-    firebase.database().ref('/posts').on("value", function (photo) {
-      let data = photo.val();
-      let keys = Object.keys(data);
-      for (let i = 0; i < keys.length; i++) {
-        let k = keys[i];
-        let photoURI = data[k].photo;
-        let soundURI = data[k].sound.uri;
-        that.setState({ photo: photoURI })
+    firebase.auth().onAuthStateChanged((user) => {
+      let uid = user.uid
+      if (uid) {
+        firebase.database().ref(uid).child('posts').on('value', function (snapshot) {
+          snapshot.forEach((childSnapshot) => {
+            let childKey = childSnapshot.key;
+            let childData = childSnapshot.val();
+            let imgURL = childData.imgURL;
+            imgURLs.push(imgURL)
+          })
+        })
+      } else {
+        // User not logged in or has just logged out.
       }
+    });
+  }
+
+  componentWillUnmount = () => {
+    imgURLs = []
+  }
+
+  mapPosts = () => {
+    return imgURLs.map((data) => {
+      console.log('data:', data)
+      return (
+        <Posts
+          key={data}
+          photo={data} />
+      )
     })
   }
 
@@ -48,18 +68,6 @@ export default class FeedScreen extends React.Component {
     this.setState({ modalVisible: !this.state.modalVisible })
     this.props.navigation.navigate('Camera')
   };
-
-  mapPosts = () => {
-    let photos = this.state.photo;
-    return photos.map((photo) => {
-      return (
-        <Posts
-          key={photo.photo}
-          photo={photo.photo}
-        />
-      )
-    })
-  }
 
   render() {
     return (
@@ -141,7 +149,7 @@ export default class FeedScreen extends React.Component {
                 }}
               />
             </View>
-            <Posts photo={this.state.photo} />
+            {this.mapPosts()}
           </View>
         }
       </ScrollView>

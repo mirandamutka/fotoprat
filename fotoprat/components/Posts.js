@@ -16,7 +16,7 @@ class Posts extends Component {
       <View style={{ marginBottom: 10 }}>
 
         <Image
-          source={this.props.photo}
+          source={{uri: this.props.photo}}
           style={{
             width: '100%',
             height: 300,
