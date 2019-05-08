@@ -5,7 +5,9 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  Platform
+  Platform,
+  ActivityIndicator,
+  Modal
 } from 'react-native';
 import { Audio, Permissions, Icon, FileSystem } from 'expo';
 import * as firebase from 'firebase';
@@ -36,7 +38,10 @@ class RecordScreen extends Component {
       shouldPlay: false,
       isPlaying: false,
       isRecording: false,
-      buttonPressed: false
+      buttonPressed: false,
+      isVisible: false,
+      imgURL: '',
+      recURL: ''
     };
     this.recordingSettings = JSON.parse(JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY));
 
@@ -118,9 +123,8 @@ class RecordScreen extends Component {
     });
   };
 
-
-  uploadImageAsync = async (uri, uid) => {
-    const blob = await new Promise((resolve, reject) => {
+  uploadPostAsync = async (photoURI, soundURI, uid) => {
+    const blobPHOTO = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
         resolve(xhr.response);
@@ -130,40 +134,71 @@ class RecordScreen extends Component {
         reject(new TypeError('Network request failed'));
       };
       xhr.responseType = 'blob';
-      xhr.open('GET', uri, true);
+      xhr.open('GET', photoURI, true);
       xhr.send(null);
     });
     let date = () => {
       today = new Date();
       let yyyy = today.getFullYear();
       let dd = today.getDate();
-      let mm = today.getMonth()+1;
+      let mm = today.getMonth() + 1;
       let hh = today.getHours();
       let mn = today.getMinutes();
       let ss = today.getSeconds();
-      
-      if(dd<10) dd='0'+dd;
-      if(mm<10) mm='0'+mm;
-      if(hh<10) hh='0'+hh;
-      if(mn<10) mn='0'+mn;
-      if(ss<10) ss='0'+ss;
-      return (yyyy+mm+dd+hh+mn+ss);
+
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+      if (hh < 10) hh = '0' + hh;
+      if (mn < 10) mn = '0' + mn;
+      if (ss < 10) ss = '0' + ss;
+      return (yyyy + mm + dd + hh + mn + ss);
+    };
+    let imgName = date() + '-media.jpg'
+    const imgRef = firebase.storage().ref(uid).child('images/' + imgName);
+    const uploadTaskImg = await imgRef.put(blobPHOTO);
+
+    blobPHOTO.close();
+
+    const blobSOUND = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
       };
-    let name = date() + '-media.jpg'
-    const imgRef = firebase.storage().ref(uid).child('images/' + name);
-    const uploadTask = await imgRef.put(blob);
-
-    blob.close();
-
-    // Handle successful uploads on complete
-    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-    imgRef.getDownloadURL().then(function(url) {
-      firebase.database().ref(uid).child('posts/').push({
-        imgURL: url
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError('Network request failed'));
+      };
+      xhr.responseType = 'blob';
+      xhr.open('GET', soundURI, true);
+      xhr.send(null);
     });
-  }, function(error){
-      console.log(error);
-  });
+
+    let recName = date() + '-media.mp3'
+    const recRef = firebase.storage().ref(uid).child('recordings/' + recName);
+    const uploadTaskRec = await recRef.put(blobSOUND);
+
+    blobSOUND.close();
+
+    let imgDLURL = await imgRef.getDownloadURL();
+    let imgURL = imgDLURL.toString();
+
+    let recDLURL = await recRef.getDownloadURL();
+    let recURL = recDLURL.toString();
+    
+
+    const ready = await firebase.database().ref(uid).child('posts/').push({
+        imgURL: imgURL,
+        recURL: recURL
+
+      })
+
+    if (ready) {
+      this.props.navigation.navigate('Home')
+      this.setState({ isVisible: false })
+    } else {
+      console.warn(ready)
+    }
+
   }
 
   async stopRecordingAndEnablePlayback() {
@@ -177,7 +212,7 @@ class RecordScreen extends Component {
     }
     const photo = this.props.navigation.getParam('photo')
     const soundInfo = await FileSystem.getInfoAsync(this.recording.getURI());
-    console.log(`FILE INFO: ${JSON.stringify(soundInfo)}`);
+    console.warn(`FILE INFO: ${JSON.stringify(soundInfo)}`);
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -199,10 +234,11 @@ class RecordScreen extends Component {
     });
 
     firebase.auth().onAuthStateChanged((user) => {
-      let uri = photo.uri
+      let photoURI = photo.uri
+      let soundURI = soundInfo.uri
       let uid = user.uid
       if (uid) {
-        this.uploadImageAsync(uri, uid);
+        this.uploadPostAsync(photoURI, soundURI, uid);
       } else {
         // User not logged in or has just logged out.
       }
@@ -211,11 +247,8 @@ class RecordScreen extends Component {
 
   onRecordPressed = () => {
     if (this.state.isRecording) {
-      this.setState({ buttonPressed: false })
+      this.setState({ buttonPressed: false, isVisible: true })
       this.stopRecordingAndEnablePlayback();
-      this.props.navigation.navigate('Home', {
-        photo: this.props.navigation.getParam('photo')
-      })
     } else {
       this.setState({ buttonPressed: true })
       this.stopPlaybackAndStartRecording();
@@ -270,11 +303,24 @@ class RecordScreen extends Component {
     } else {
       return (
         <View style={{ height: '100%' }}>
+          <View>
+            {this.state.isVisible &&
+              <Modal
+                animationType='fade'
+                transparent={true}
+                visible={this.state.isVisible}
+              >
+                <View style={style.transparentModalContainer}>
+                  <ActivityIndicator size='large' color={Colors.orangeColor} />
+                </View>
+              </Modal>
+            }
+          </View>
           <Image
             source={photo}
             style={{
               width: '100%',
-              height: '80%',
+              height: '75%',
               alignSelf: 'center'
             }}
             resizeMode={'contain'}

@@ -20,8 +20,6 @@ class Posts extends Component {
           style={{
             width: '100%',
             height: 300,
-            borderWidth: 1,
-            borderColor: '#E0E0E0',
             alignSelf: 'center'
           }} />
         <View style={style.roundButtonContainer}>

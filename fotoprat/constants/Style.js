@@ -51,6 +51,16 @@ export default StyleSheet.create({
     flexDirection: 'row'
   },
 
+  transparentModalContainer: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    backgroundColor: Colors.whiteColor,
+    opacity: .8,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
   // BUTTON STYLES
 
   cameraButton: {

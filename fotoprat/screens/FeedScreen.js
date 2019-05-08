@@ -28,19 +28,34 @@ export default class FeedScreen extends React.Component {
 
   state = {
     modalVisible: true,
-    imgSource: []
+    imgSource: [],
+    rendered: false,
   };
 
   componentDidMount = () => {
+  }
+
+  componentDidDismount = () => {
+  }
+
+  readPosts = () => {
     firebase.auth().onAuthStateChanged((user) => {
       let uid = user.uid
       if (uid) {
-        firebase.database().ref(uid).child('posts').on('value', function (snapshot) {
+        let dbPostRef = firebase.database().ref(uid).child('posts');
+        dbPostRef.on('child_added', snapshot => {
           snapshot.forEach((childSnapshot) => {
-            let childKey = childSnapshot.key;
-            let childData = childSnapshot.val();
-            let imgURL = childData.imgURL;
-            imgURLs.push(imgURL)
+            let imgURL = childSnapshot.toJSON()
+            if (imgURL.includes('jpg')) {
+            if (!imgURLs.includes(imgURL)) {
+              imgURLs.push(imgURL)
+              console.warn('Bild pushad!')
+            } else {
+              console.warn('Bilden finns!')
+            }
+          } else {
+            console.warn('Ljudfil!')
+          }
           })
         })
       } else {
@@ -49,18 +64,12 @@ export default class FeedScreen extends React.Component {
     });
   }
 
-  componentWillUnmount = () => {
-    imgURLs = []
-  }
-
   mapPosts = () => {
-    return imgURLs.map((data) => {
-      console.log('data:', data)
-      return (
-        <Posts
-          key={data}
-          photo={data} />
-      )
+    return imgURLs.map((url) => {
+      console.warn('img array:', imgURLs)
+      return <Posts
+        key={url}
+        photo={url} />
     })
   }
 
@@ -72,14 +81,13 @@ export default class FeedScreen extends React.Component {
   render() {
     return (
       <ScrollView>
+        {this.readPosts()}
         {this.state.modalVisible ?
           <Modal
             animationType="slide"
             transparent={false}
             visible={this.state.modalVisible}
-            onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
-            }}>
+          >
             <ImageBackground
               source={require('../assets/images/splashbg.png')}
               style={{
@@ -137,21 +145,19 @@ export default class FeedScreen extends React.Component {
             </ImageBackground>
           </Modal>
           :
-          <View>
-            <View style={style.headerContainer}>
-              <Image
-                source={require('../assets/images/logo_grey.png')}
-                style={{
-                  height: 120,
-                  width: 100,
-                  resizeMode: 'contain',
-                  alignSelf: 'center'
-                }}
-              />
-            </View>
-            {this.mapPosts()}
+          <View style={style.headerContainer}>
+            <Image
+              source={require('../assets/images/logo_grey.png')}
+              style={{
+                height: 120,
+                width: 100,
+                resizeMode: 'contain',
+                alignSelf: 'center'
+              }}
+            />
           </View>
         }
+        {this.mapPosts()}
       </ScrollView>
     );
   }

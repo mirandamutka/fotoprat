@@ -3,6 +3,7 @@ import { Text, View, Platform } from 'react-native';
 import { Camera, Permissions } from 'expo';
 
 import { RecordButton } from '../components/Buttons';
+import Colors from '../constants/Colors';
 import style from '../constants/Style';
 
 const DESIRED_RATIO = "1:1";
@@ -29,10 +30,10 @@ export default class CameraScreen extends React.Component {
       // console.log('')
 
       let photo = await new Promise(async resolve => {
-        await this.camera.takePictureAsync({onPictureSaved : resolve});
+        await this.camera.takePictureAsync({ onPictureSaved: resolve });
         this.camera.pausePreview();
-        })
-        this.camera.resumePreview();
+      })
+      this.camera.resumePreview();
 
       this.setState({ photo })
     }
@@ -59,25 +60,33 @@ export default class CameraScreen extends React.Component {
       return <Text>No access to camera</Text>;
     } else {
       return (
-        <Camera
-          ref={ref => { this.camera = ref; }}
-          style={{ flex: 2 }} type={this.state.type}
-          onCameraReady={this.prepareRatio} // You can only get the supported ratios when the camera is mounted
-          ratio={'1:1'}
-        >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: 'transparent',
-              flexDirection: 'row',
-            }}>
-            <View style={style.captureButtonContainer}>
-              <RecordButton
-                function={this.snap}
-              />
+        <View style={{ height: '100%', justifyContent: 'space-evenly' }}>
+          <Camera
+            ref={ref => { this.camera = ref; }}
+            style={{ height: '50%', alignSelf: 'center' }}
+            type={this.state.type}
+            onCameraReady={this.prepareRatio} // You can only get the supported ratios when the camera is mounted
+            ratio={'1:1'}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row'
+              }}>
+              <View style={{ width: '100%' }}>
+              </View>
             </View>
+          </Camera>
+          <View style={style.captureButtonContainer}>
+            <RecordButton
+              function={this.snap}
+            />
+            <Text style={[
+              style.buttonText,
+              {color: Colors.orangeColor}
+              ]}>Ta bild!</Text>
           </View>
-        </Camera>
+        </View>
       );
     }
   }
