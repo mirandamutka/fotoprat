@@ -32,7 +32,8 @@ export default class FeedScreen extends React.Component {
     rendered: false,
   };
 
-  componentDidMount = () => {
+  componentDidUpdate = () => {
+    
   }
 
   componentDidDismount = () => {
@@ -49,12 +50,12 @@ export default class FeedScreen extends React.Component {
             if (imgURL.includes('jpg')) {
             if (!imgURLs.includes(imgURL)) {
               imgURLs.push(imgURL)
-              console.warn('Bild pushad!')
+              // console.warn('Bild pushad!')
             } else {
-              console.warn('Bilden finns!')
+              // console.warn('Bilden finns!')
             }
           } else {
-            console.warn('Ljudfil!')
+            // console.warn('Ljudfil!')
           }
           })
         })
@@ -65,8 +66,10 @@ export default class FeedScreen extends React.Component {
   }
 
   mapPosts = () => {
-    return imgURLs.map((url) => {
-      console.warn('img array:', imgURLs)
+    
+    let sortedArr = imgURLs.sort((a, b) => b.imgURL > a.imgURL)
+    return sortedArr.map((url) => {
+      // console.warn('img array:', imgURLs)
       return <Posts
         key={url}
         photo={url} />
@@ -87,6 +90,9 @@ export default class FeedScreen extends React.Component {
             animationType="slide"
             transparent={false}
             visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+            }}
           >
             <ImageBackground
               source={require('../assets/images/splashbg.png')}

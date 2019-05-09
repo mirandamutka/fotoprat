@@ -1,12 +1,12 @@
 import React from 'react';
-import { Text, View, Platform } from 'react-native';
-import { Camera, Permissions } from 'expo';
+import { Text, View, Platform, Modal } from 'react-native';
+import { Camera, Permissions, ScreenOrientation } from 'expo';
 
 import { RecordButton } from '../components/Buttons';
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
 
-const DESIRED_RATIO = "1:1";
+const DESIRED_RATIO = '16:9';
 
 export default class CameraScreen extends React.Component {
 
@@ -17,17 +17,23 @@ export default class CameraScreen extends React.Component {
   state = {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
-    processing: false
+    processing: false,
+    modalVisible: true,
+    pictureSize: null
   };
 
   async componentDidMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
+    ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL);
   };
+
+  componentWillUnmount = () => {
+    ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT);
+  }
 
   snap = async () => {
     if (this.camera) {
-      // console.log('')
 
       let photo = await new Promise(async resolve => {
         await this.camera.takePictureAsync({ onPictureSaved: resolve });
@@ -37,6 +43,7 @@ export default class CameraScreen extends React.Component {
 
       this.setState({ photo })
     }
+    this.setState({ modalVisible: false })
     await this.props.navigation.navigate('Record', { photo: this.state.photo })
   };
 
@@ -47,8 +54,12 @@ export default class CameraScreen extends React.Component {
       // See if the current device has your desired ratio, otherwise get the maximum supported one
       // Usually the last element of "ratios" is the maximum supported ratio
       const ratio = ratios.find((ratio) => ratio === DESIRED_RATIO) || ratios[ratios.length - 1];
+      const sizes = await this.camera.getAvailablePictureSizesAsync(ratio);
+      const desiredSize = sizes[0];
 
-      this.setState({ ratio });
+      this.setState({ ratio, pictureSize: desiredSize });
+      console.warn('Ratio:', ratios)
+      console.warn('Sizes:', sizes[0])
     }
   };
 
@@ -60,33 +71,29 @@ export default class CameraScreen extends React.Component {
       return <Text>No access to camera</Text>;
     } else {
       return (
-        <View style={{ height: '100%', justifyContent: 'space-evenly' }}>
           <Camera
             ref={ref => { this.camera = ref; }}
-            style={{ height: '50%', alignSelf: 'center' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              alignSelf: 'center'
+            }}
             type={this.state.type}
             onCameraReady={this.prepareRatio} // You can only get the supported ratios when the camera is mounted
-            ratio={'1:1'}
+            ratio={this.state.ratio}
           >
             <View
               style={{
                 flex: 1,
                 flexDirection: 'row'
               }}>
-              <View style={{ width: '100%' }}>
+              <View style={style.captureButtonContainer}>
+                <RecordButton
+                  function={this.snap}
+                />
               </View>
             </View>
           </Camera>
-          <View style={style.captureButtonContainer}>
-            <RecordButton
-              function={this.snap}
-            />
-            <Text style={[
-              style.buttonText,
-              {color: Colors.orangeColor}
-              ]}>Ta bild!</Text>
-          </View>
-        </View>
       );
     }
   }

@@ -19,7 +19,7 @@ import style from '../constants/Style';
 class RecordScreen extends Component {
 
   static navigationOptions = {
-    header: null
+    title: 'Spela in berättelse'
   };
 
   constructor(props) {
@@ -201,7 +201,7 @@ class RecordScreen extends Component {
 
   }
 
-  async stopRecordingAndEnablePlayback() {
+  stopRecordingAndEnablePlayback = async () => {
     this.setState({
       isLoading: true,
     });
@@ -232,6 +232,7 @@ class RecordScreen extends Component {
     this.setState({
       isLoading: false,
     });
+    
 
     firebase.auth().onAuthStateChanged((user) => {
       let photoURI = photo.uri
@@ -302,13 +303,16 @@ class RecordScreen extends Component {
       return <Text>No access to microphone</Text>;
     } else {
       return (
-        <View style={{ height: '100%' }}>
+        <View style={{ height: '100%', justifyContent: 'space-evenly' }}>
           <View>
             {this.state.isVisible &&
               <Modal
                 animationType='fade'
                 transparent={true}
                 visible={this.state.isVisible}
+                onRequestClose={() => {
+                  Alert.alert('Modal has been closed.');
+                }}
               >
                 <View style={style.transparentModalContainer}>
                   <ActivityIndicator size='large' color={Colors.orangeColor} />
@@ -323,12 +327,12 @@ class RecordScreen extends Component {
               height: '75%',
               alignSelf: 'center'
             }}
-            resizeMode={'contain'}
+            resizeMode={'center'}
           />
-          <View style={{ paddingTop: 15, alignItems: 'center' }}>
+          <View style={{ alignItems: 'center' }}>
             {this.state.buttonPressed ?
               <TouchableOpacity
-                style={style.roundButton}
+                style={[style.roundButton]}
                 onPress={this.onRecordPressed}
               >
                 <Icon.Ionicons

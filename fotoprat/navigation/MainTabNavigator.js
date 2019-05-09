@@ -2,6 +2,8 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation';
 
+import Colors from '../constants/Colors';
+
 import TabBarIcon from '../components/TabBarIcon';
 import FeedScreen from '../screens/FeedScreen';
 import CameraScreen from '../screens/CameraScreen';
@@ -12,7 +14,7 @@ const FeedStack = createStackNavigator({
 });
 
 FeedStack.navigationOptions = {
-  tabBarLabel: 'Feed',
+  tabBarLabel: 'Flöde',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -25,13 +27,18 @@ FeedStack.navigationOptions = {
   ),
 };
 
-const CameraStack = createStackNavigator({
-  Camera: CameraScreen,
-  Record: RecordScreen
-});
+const CameraStack = createStackNavigator(
+  {
+    Camera: CameraScreen,
+    Record: RecordScreen
+  },
+  {
+    headerLayoutPreset: 'center',
+  }
+);
 
 CameraStack.navigationOptions = {
-  tabBarLabel: 'Camera',
+  tabBarLabel: 'Kamera',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -51,12 +58,12 @@ export default createMaterialTopTabNavigator({
 
   {
     tabBarOptions: {
-      activeTintColor: '#DC8231',
-      inactiveTintColor: 'grey',
+      activeTintColor: Colors.darkOrangeColor,
+      inactiveTintColor: Colors.greyColor,
       style: {
         backgroundColor: 'white',
         borderTopWidth: 0.2,
-        borderTopColor: 'grey'
+        borderTopColor: Colors.greyColor
       },
       indicatorStyle: {
         height: 0

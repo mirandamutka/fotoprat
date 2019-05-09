@@ -21,7 +21,8 @@ class Posts extends Component {
             width: '100%',
             height: 300,
             alignSelf: 'center'
-          }} />
+          }}
+          />
         <View style={style.roundButtonContainer}>
           <RoundButton />
         </View>
