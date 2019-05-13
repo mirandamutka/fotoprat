@@ -2,7 +2,6 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 
-import { RoundButton, RectangularButton } from './components/Buttons';
 import AppNavigator from './navigation/AppNavigator';
 import * as firebase from 'firebase';
 import * as c from './constants/Config';

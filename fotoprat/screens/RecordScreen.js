@@ -11,7 +11,6 @@ import {
 import { Audio, Permissions, Icon, FileSystem } from 'expo';
 import * as firebase from 'firebase';
 
-import { RecordButton } from '../components/Buttons';
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
 

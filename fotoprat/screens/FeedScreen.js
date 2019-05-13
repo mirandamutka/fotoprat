@@ -44,19 +44,14 @@ export default class FeedScreen extends React.Component {
       if (uid) {
         let dbPostRef = firebase.database().ref(uid).child('posts');
         dbPostRef.on('child_added', snapshot => {
-          snapshot.forEach((childSnapshot) => {
-            let imgURL = childSnapshot.toJSON()
-            if (imgURL.includes('jpg')) {
-              if (!imgURLs.includes(imgURL)) {
-                imgURLs.push(imgURL)
+            let post = snapshot.toJSON()
+            console.warn(post)
+              if (!imgURLs.includes(post)) {
+                imgURLs.push(post)
                 // console.warn('Bild pushad!')
               } else {
                 // console.warn('Bilden finns!')
               }
-            } else {
-              // console.warn('Ljudfil!')
-            }
-          })
         })
       } else {
         // User not logged in or has just logged out.
@@ -66,12 +61,14 @@ export default class FeedScreen extends React.Component {
 
   mapPosts = () => {
 
-    let sortedArr = imgURLs.sort((a, b) => b.imgURL > a.imgURL)
-    return sortedArr.map((url) => {
+    let sortedArr = imgURLs.sort((a, b) => b.post > a.post)
+    return sortedArr.map((post) => {
       // console.warn('img array:', imgURLs)
       return <Posts
-        key={url}
-        photo={url} />
+        key={post.imgURL}
+        photo={post.imgURL}
+        sound={post.recURL}
+        />
     })
   }
 
