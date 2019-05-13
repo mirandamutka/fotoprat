@@ -10,7 +10,7 @@ import CameraScreen from '../screens/CameraScreen';
 import RecordScreen from '../screens/RecordScreen';
 
 const FeedStack = createStackNavigator({
-  Home: FeedScreen
+  Feed: FeedScreen
 });
 
 FeedStack.navigationOptions = {

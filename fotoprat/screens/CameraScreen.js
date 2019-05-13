@@ -1,12 +1,22 @@
 import React from 'react';
-import { Text, View, Platform, Modal } from 'react-native';
-import { Camera, Permissions, ScreenOrientation } from 'expo';
+import {
+  ImageBackground,
+  View,
+  StyleSheet,
+  Platform,
+  Text,
+  TouchableOpacity
+} from 'react-native';
+import {
+  Permissions,
+  ScreenOrientation,
+  ImagePicker,
+  Icon
+} from 'expo';
 
-import { RecordButton } from '../components/Buttons';
+import { RectangularButton } from '../components/Buttons';
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
-
-const DESIRED_RATIO = '16:9';
 
 export default class CameraScreen extends React.Component {
 
@@ -14,17 +24,7 @@ export default class CameraScreen extends React.Component {
     header: null
   };
 
-  state = {
-    hasCameraPermission: null,
-    type: Camera.Constants.Type.back,
-    processing: false,
-    modalVisible: true,
-    pictureSize: null
-  };
-
   async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL);
   };
 
@@ -32,69 +32,125 @@ export default class CameraScreen extends React.Component {
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT);
   }
 
-  snap = async () => {
-    if (this.camera) {
-
-      let photo = await new Promise(async resolve => {
-        await this.camera.takePictureAsync({ onPictureSaved: resolve });
-        this.camera.pausePreview();
-      })
-      this.camera.resumePreview();
-
-      this.setState({ photo })
-    }
-    this.setState({ modalVisible: false })
-    await this.props.navigation.navigate('Record', { photo: this.state.photo })
+  state = {
+    image: null,
+    hasCameraPermission: null,
+    hasCameraRollPermission: null
   };
 
-  prepareRatio = async () => {
-    if (Platform.OS === 'android' && this.camera) {
-      const ratios = await this.camera.getSupportedRatiosAsync();
+  askCameraPermission = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ hasCameraPermission: status === 'granted' });
+  };
 
-      // See if the current device has your desired ratio, otherwise get the maximum supported one
-      // Usually the last element of "ratios" is the maximum supported ratio
-      const ratio = ratios.find((ratio) => ratio === DESIRED_RATIO) || ratios[ratios.length - 1];
-      const sizes = await this.camera.getAvailablePictureSizesAsync(ratio);
-      const desiredSize = sizes[0];
+  askCameraRollPermission = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    this.setState({ hasCameraRollPermission: status === 'granted' });
+  };
 
-      this.setState({ ratio, pictureSize: desiredSize });
-      console.warn('Ratio:', ratios)
-      console.warn('Sizes:', sizes[0])
+  openLibrary = async () => {
+    await this.askCameraRollPermission();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: .7,
+    });
+    this.setState({ image: result.uri });
+    {
+      this.state.image &&
+        await this.props.navigation.navigate('Record', { photo: result.uri })
+    }
+  };
+
+  openCamera = async () => {
+    await this.askCameraPermission();
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: .7,
+    });
+    this.setState({ image: result.uri });
+    {
+      this.state.image &&
+        await this.props.navigation.navigate('Record', { photo: result.uri })
     }
   };
 
   render() {
-    const { hasCameraPermission } = this.state;
-    if (hasCameraPermission === null) {
-      return <View />;
-    } else if (hasCameraPermission === false) {
-      return <Text>No access to camera</Text>;
-    } else {
-      return (
-          <Camera
-            ref={ref => { this.camera = ref; }}
-            style={{
-              width: '100%',
-              height: '100%',
-              alignSelf: 'center'
-            }}
-            type={this.state.type}
-            onCameraReady={this.prepareRatio} // You can only get the supported ratios when the camera is mounted
-            ratio={this.state.ratio}
+    let { image } = this.state;
+    return (
+      <ImageBackground
+        source={require('../assets/images/splashbg.png')}
+        style={{
+          flex: 1,
+          width: '100%',
+          height: '100%',
+        }}>
+        <View style={style.modalContainer}>
+          <TouchableOpacity
+            onPress={this.openLibrary}
+          ><Icon.Ionicons
+              name={
+                Platform.OS === 'ios'
+                  ? 'ios-images'
+                  : 'md-images'
+              }
+              size={60}
+              color={Colors.orangeColor}
+              style={{ alignSelf: 'center', paddingTop: 15 }}
+            />
+            <Text style={[
+              style.buttonText,
+              {
+                color: Colors.orangeColor,
+                paddingTop: '3%'
+              }
+            ]}
+            >
+              GALLERI
+              </Text>
+          </TouchableOpacity>
+          <View style={style.verticalDivider} />
+          <TouchableOpacity
+            onPress={this.openCamera}
           >
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row'
-              }}>
-              <View style={style.captureButtonContainer}>
-                <RecordButton
-                  function={this.snap}
-                />
-              </View>
-            </View>
-          </Camera>
-      );
-    }
+            <Icon.Ionicons
+              name={
+                Platform.OS === 'ios'
+                  ? 'ios-camera'
+                  : 'md-camera'
+              }
+              size={75}
+              color={Colors.orangeColor}
+              style={{ alignSelf: 'center', paddingTop: 15 }}
+            />
+            <Text
+              style={[
+                style.buttonText,
+                {
+                  color: Colors.orangeColor,
+                  paddingTop: 0
+                }
+              ]}
+            >
+              KAMERA
+              </Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'space-around',
+    width: '100%',
+    height: '70%',
+    alignSelf: 'center',
+  },
+  paragraph: {
+    fontSize: 18,
+    color: '#34495e',
+  },
+});

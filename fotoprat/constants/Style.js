@@ -35,7 +35,7 @@ export default StyleSheet.create({
   rectButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 20
+    marginBottom: 30
   },
 
   camContainer: {
@@ -167,7 +167,7 @@ export default StyleSheet.create({
 
   recordText: {
     position: 'absolute',
-    top: 40,
+    top: 20,
     left: 80,
     fontSize: 16
   },
@@ -198,6 +198,7 @@ export default StyleSheet.create({
     height: 400,
     width: 2,
     backgroundColor: Colors.whiteColor,
+    marginBottom: 10
   },
 
   onboardInput: {

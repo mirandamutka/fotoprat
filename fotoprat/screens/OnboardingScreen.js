@@ -30,7 +30,7 @@ class OnboardingScreen extends Component {
       }
       firebase.auth().createUserWithEmailAndPassword(email, password)
       this.setState({ modalVisible: false })
-      this.props.navigation.navigate('Home')
+      this.props.navigation.navigate('Feed')
     }
     catch (error) {
       console.log(error.toString())
@@ -47,7 +47,7 @@ class OnboardingScreen extends Component {
         console.log(user)
       })
       this.setState({ modalVisible: false })
-      await this.props.navigation.navigate('Home')
+      await this.props.navigation.navigate('Feed')
     }
     catch (error) {
       (

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   View,
-  ScrollView,
   Text,
   Image,
   TouchableOpacity,
@@ -193,7 +192,7 @@ class RecordScreen extends Component {
       })
 
     if (ready) {
-      this.props.navigation.navigate('Home')
+      this.props.navigation.navigate('Feed')
       this.setState({ isVisible: false })
     } else {
       console.warn(ready)
@@ -235,7 +234,7 @@ class RecordScreen extends Component {
     
 
     firebase.auth().onAuthStateChanged((user) => {
-      let photoURI = photo.uri
+      let photoURI = photo
       let soundURI = soundInfo.uri
       let uid = user.uid
       if (uid) {
@@ -303,7 +302,7 @@ class RecordScreen extends Component {
       return <Text>No access to microphone</Text>;
     } else {
       return (
-        <View style={{ height: '100%', justifyContent: 'space-evenly' }}>
+        <View style={{ height: '90%', justifyContent: 'space-evenly' }}>
           <View>
             {this.state.isVisible &&
               <Modal
@@ -321,13 +320,12 @@ class RecordScreen extends Component {
             }
           </View>
           <Image
-            source={photo}
+            source={{ uri: photo }}
             style={{
               width: '100%',
-              height: '75%',
-              alignSelf: 'center'
+              height: '100%'
             }}
-            resizeMode={'center'}
+            resizeMode={'contain'}
           />
           <View style={{ alignItems: 'center' }}>
             {this.state.buttonPressed ?

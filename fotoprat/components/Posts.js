@@ -19,7 +19,7 @@ class Posts extends Component {
           source={{uri: this.props.photo}}
           style={{
             width: '100%',
-            height: 300,
+            height: 400,
             alignSelf: 'center'
           }}
           />

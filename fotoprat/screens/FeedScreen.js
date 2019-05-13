@@ -28,12 +28,11 @@ export default class FeedScreen extends React.Component {
 
   state = {
     modalVisible: true,
-    imgSource: [],
-    rendered: false,
+    postsExist: false
   };
 
   componentDidUpdate = () => {
-    
+
   }
 
   componentDidDismount = () => {
@@ -48,15 +47,15 @@ export default class FeedScreen extends React.Component {
           snapshot.forEach((childSnapshot) => {
             let imgURL = childSnapshot.toJSON()
             if (imgURL.includes('jpg')) {
-            if (!imgURLs.includes(imgURL)) {
-              imgURLs.push(imgURL)
-              // console.warn('Bild pushad!')
+              if (!imgURLs.includes(imgURL)) {
+                imgURLs.push(imgURL)
+                // console.warn('Bild pushad!')
+              } else {
+                // console.warn('Bilden finns!')
+              }
             } else {
-              // console.warn('Bilden finns!')
+              // console.warn('Ljudfil!')
             }
-          } else {
-            // console.warn('Ljudfil!')
-          }
           })
         })
       } else {
@@ -66,7 +65,7 @@ export default class FeedScreen extends React.Component {
   }
 
   mapPosts = () => {
-    
+
     let sortedArr = imgURLs.sort((a, b) => b.imgURL > a.imgURL)
     return sortedArr.map((url) => {
       // console.warn('img array:', imgURLs)
@@ -107,12 +106,12 @@ export default class FeedScreen extends React.Component {
                 ><Icon.Ionicons
                     name={
                       Platform.OS === 'ios'
-                        ? 'ios-images'
-                        : 'md-images'
+                        ? 'ios-paper'
+                        : 'md-paper'
                     }
-                    size={60}
+                    size={55}
                     color={Colors.orangeColor}
-                    style={{ alignSelf: 'center', paddingTop: 20 }}
+                    style={{ alignSelf: 'center', paddingTop: 15 }}
                   />
                   <Text style={[
                     style.buttonText,
@@ -129,14 +128,20 @@ export default class FeedScreen extends React.Component {
                   <Icon.Ionicons
                     name={
                       Platform.OS === 'ios'
-                        ? 'ios-camera'
-                        : 'md-camera'
+                        ? 'ios-image'
+                        : 'md-image'
                     }
-                    size={75}
+                    size={55}
                     color={Colors.orangeColor}
                     style={{ alignSelf: 'center', paddingTop: 15 }}
                   />
-                  <Text style={[style.buttonText, { color: Colors.orangeColor }]}>TA BILD</Text>
+                  <Text style={[
+                    style.buttonText,
+                    {
+                      color: Colors.orangeColor,
+                      paddingTop: '3%'
+                    }
+                  ]}>TA BILD</Text>
                 </TouchableOpacity>
               </View>
               <Image
@@ -161,9 +166,9 @@ export default class FeedScreen extends React.Component {
                 alignSelf: 'center'
               }}
             />
+            {this.mapPosts()}
           </View>
         }
-        {this.mapPosts()}
       </ScrollView>
     );
   }
