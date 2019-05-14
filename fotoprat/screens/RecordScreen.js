@@ -20,7 +20,8 @@ class RecordScreen extends Component {
     title: 'Spela in berättelse'
   };
 
-  constructor() {
+  constructor(props) {
+    super(props);
     this.recording = null;
     this.sound = null;
     this.state = {
