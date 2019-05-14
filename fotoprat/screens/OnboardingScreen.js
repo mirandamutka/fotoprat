@@ -20,7 +20,7 @@ class OnboardingScreen extends Component {
     password: '',
     text: '',
     modalVisible: true
-  }
+  };
 
   regUser = (email, password) => {
     try {
@@ -69,7 +69,8 @@ class OnboardingScreen extends Component {
             visible={this.state.modalVisible}
             onRequestClose={() => {
               Alert.alert('Modal has been closed.');
-            }}>
+            }}
+          >
             <View style={style.onboardingContainer}>
               <Text style={style.registerText}>VÄLKOMMEN!</Text>
               <TextInput
@@ -119,6 +120,6 @@ class OnboardingScreen extends Component {
       </View>
     );
   }
-}
+};
 
 export default OnboardingScreen;

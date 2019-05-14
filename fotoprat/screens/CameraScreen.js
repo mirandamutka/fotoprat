@@ -14,7 +14,6 @@ import {
   Icon
 } from 'expo';
 
-import { RectangularButton } from '../components/Buttons';
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
 
@@ -24,7 +23,13 @@ export default class CameraScreen extends React.Component {
     header: null
   };
 
-  async componentDidMount() {
+  state = {
+    image: null,
+    hasCameraPermission: null,
+    hasCameraRollPermission: null
+  };
+
+  componentDidMount = async () => {
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL);
   };
 
@@ -32,11 +37,6 @@ export default class CameraScreen extends React.Component {
     ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT);
   }
 
-  state = {
-    image: null,
-    hasCameraPermission: null,
-    hasCameraRollPermission: null
-  };
 
   askCameraPermission = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -140,17 +140,4 @@ export default class CameraScreen extends React.Component {
       </ImageBackground>
     );
   }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'space-around',
-    width: '100%',
-    height: '70%',
-    alignSelf: 'center',
-  },
-  paragraph: {
-    fontSize: 18,
-    color: '#34495e',
-  },
-});
+};

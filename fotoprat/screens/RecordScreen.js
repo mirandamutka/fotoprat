@@ -20,21 +20,13 @@ class RecordScreen extends Component {
     title: 'Spela in berättelse'
   };
 
-  constructor(props) {
-    super(props);
+  constructor() {
     this.recording = null;
     this.sound = null;
-    this.isSeeking = false;
-    this.shouldPlayAtEndOfSeek = false;
     this.state = {
       hasRecordPermission: false,
       isLoading: false,
-      isPlaybackAllowed: false,
-      soundPosition: null,
-      soundDuration: null,
       recordingDuration: null,
-      shouldPlay: false,
-      isPlaying: false,
       isRecording: false,
       buttonPressed: false,
       isVisible: false,
@@ -42,33 +34,11 @@ class RecordScreen extends Component {
       recURL: ''
     };
     this.recordingSettings = JSON.parse(JSON.stringify(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY));
-
-  }
-
-  async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-    this.setState({ hasRecordPermission: status === 'granted' });
   };
 
-  soundStatus = status => {
-    if (status.isLoaded) {
-      this.setState({
-        soundDuration: status.durationMillis,
-        soundPosition: status.positionMillis,
-        shouldPlay: status.shouldPlay,
-        isPlaying: status.isPlaying,
-        isPlaybackAllowed: true,
-      });
-    } else {
-      this.setState({
-        soundDuration: null,
-        soundPosition: null,
-        isPlaybackAllowed: false,
-      });
-      if (status.error) {
-        console.log(`FATAL PLAYER ERROR: ${status.error}`);
-      }
-    }
+  componentDidMount = async () => {
+    const { status } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+    this.setState({ hasRecordPermission: status === 'granted' });
   };
 
   recordingStatus = status => {
@@ -83,12 +53,12 @@ class RecordScreen extends Component {
         recordingDuration: status.durationMillis,
       });
       if (!this.state.isLoading) {
-        this.stopRecordingAndEnablePlayback();
+        this.stopRecording();
       }
     }
   };
 
-  async stopPlaybackAndStartRecording() {
+  startRecording = async () => {
     this.setState({
       isLoading: true,
     });
@@ -182,24 +152,21 @@ class RecordScreen extends Component {
 
     let recDLURL = await recRef.getDownloadURL();
     let recURL = recDLURL.toString();
-    
 
     const ready = await firebase.database().ref(uid).child('posts/').push({
-        imgURL: imgURL,
-        recURL: recURL
+      imgURL: imgURL,
+      recURL: recURL
 
-      })
+    })
 
     if (ready) {
       this.props.navigation.navigate('Feed')
       this.setState({ isVisible: false })
     } else {
-      console.warn(ready)
     }
+  };
 
-  }
-
-  stopRecordingAndEnablePlayback = async () => {
+  stopRecording = async () => {
     this.setState({
       isLoading: true,
     });
@@ -210,7 +177,6 @@ class RecordScreen extends Component {
     }
     const photo = this.props.navigation.getParam('photo')
     const soundInfo = await FileSystem.getInfoAsync(this.recording.getURI());
-    console.warn(`FILE INFO: ${JSON.stringify(soundInfo)}`);
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -230,7 +196,7 @@ class RecordScreen extends Component {
     this.setState({
       isLoading: false,
     });
-    
+
 
     firebase.auth().onAuthStateChanged((user) => {
       let photoURI = photo
@@ -247,30 +213,14 @@ class RecordScreen extends Component {
   onRecordPressed = () => {
     if (this.state.isRecording) {
       this.setState({ buttonPressed: false, isVisible: true })
-      this.stopRecordingAndEnablePlayback();
+      this.stopRecording();
     } else {
       this.setState({ buttonPressed: true })
-      this.stopPlaybackAndStartRecording();
+      this.startRecording();
     }
   };
 
-  onPlayPausePressed = () => {
-    if (this.sound != null) {
-      if (this.state.isPlaying) {
-        this.sound.pauseAsync();
-      } else {
-        this.sound.playAsync();
-      }
-    }
-  };
-
-  onStopPressed = () => {
-    if (this.sound != null) {
-      this.sound.stopAsync();
-    }
-  };
-
-  getDuration(millis) {
+  getDuration = (millis) => {
     const totalSeconds = millis / 1000;
     const seconds = Math.floor(totalSeconds % 60);
     const minutes = Math.floor(totalSeconds / 60);
@@ -285,7 +235,7 @@ class RecordScreen extends Component {
     return padWithZero(minutes) + ':' + padWithZero(seconds);
   };
 
-  getRecordingTimestamp() {
+  getRecordingTimestamp = () => {
     if (this.state.recordingDuration != null) {
       return `${this.getDuration(this.state.recordingDuration)}`;
     }
@@ -370,6 +320,6 @@ class RecordScreen extends Component {
       );
     }
   }
-}
+};
 
 export default RecordScreen;

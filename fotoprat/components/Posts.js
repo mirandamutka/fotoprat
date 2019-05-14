@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { 
+import {
   View,
-  Image, 
+  Image,
   TouchableOpacity,
   Platform
 } from 'react-native';
@@ -15,7 +15,8 @@ import Colors from '../constants/Colors';
 class Posts extends Component {
 
   state = {
-    isPlaying: false
+    isPlaying: false,
+    playButton: true
   };
 
   componentDidMount = () => {
@@ -32,6 +33,26 @@ class Posts extends Component {
       await this.soundObject.loadAsync({ uri: this.props.sound });
     } catch (e) {
       console.warn('ERROR Loading Audio', e);
+    }
+    this.soundObject.setOnPlaybackStatusUpdate(this.onPlaybackStatusUpdate);
+  };
+
+  onPlaybackStatusUpdate = status => {
+    if (status.isPlaying) {
+      this.setState({
+        playButton: false
+      })
+    }
+    if (status.didJustFinish) {
+      this.setState({
+        playButton: true,
+        isPlaying: !this.state.isPlaying
+      })
+      this.soundObject.stopAsync();
+    } else {
+      if (status.error) {
+        console.log(`FATAL PLAYER ERROR: ${status.error}`);
+      }
     }
   };
 
@@ -56,37 +77,37 @@ class Posts extends Component {
           }}
         />
         <View style={style.roundButtonContainer}>
-        <TouchableOpacity
-        style={
-          this.state.isPlaying
-            ? style.roundPause
-            : style.roundButton
+          <TouchableOpacity
+            style={
+              this.state.playButton
+                ? style.roundButton
+                : style.roundPause
 
-        }
-        onPress={this.toggleAudioPlayback}
-      >
-      {this.state.isPlaying === false ?
-        <Icon.Ionicons
-          name={
-            Platform.OS === 'ios'
-              ? 'ios-play'
-              : 'md-play'
-          }
-          size={35}
-          color={Colors.whiteColor}
-        />
-        :
-        <Icon.Ionicons
-          name={
-            Platform.OS === 'ios'
-              ? 'ios-square'
-              : 'md-square'
-          }
-          size={35}
-          color={Colors.whiteColor}
-        />
-        }
-      </TouchableOpacity>
+            }
+            onPress={this.toggleAudioPlayback}
+          >
+            {this.state.playButton === true ?
+              <Icon.Ionicons
+                name={
+                  Platform.OS === 'ios'
+                    ? 'ios-play'
+                    : 'md-play'
+                }
+                size={35}
+                color={Colors.whiteColor}
+              />
+              :
+              <Icon.Ionicons
+                name={
+                  Platform.OS === 'ios'
+                    ? 'ios-square'
+                    : 'md-square'
+                }
+                size={35}
+                color={Colors.whiteColor}
+              />
+            }
+          </TouchableOpacity>
         </View>
         <View style={style.rectButtonContainer}>
           <RectangularButton

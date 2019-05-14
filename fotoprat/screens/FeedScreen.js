@@ -4,12 +4,10 @@ import {
   ImageBackground,
   ScrollView,
   View,
-  FlatList,
   Modal,
   Text,
   TouchableOpacity,
-  Platform,
-  ActivityIndicator
+  Platform
 } from 'react-native';
 import { Icon } from 'expo';
 import * as firebase from 'firebase';
@@ -31,46 +29,35 @@ export default class FeedScreen extends React.Component {
     postsExist: false
   };
 
-  componentDidUpdate = () => {
-
-  }
-
-  componentDidDismount = () => {
-  }
-
   readPosts = () => {
     firebase.auth().onAuthStateChanged((user) => {
       let uid = user.uid
       if (uid) {
         let dbPostRef = firebase.database().ref(uid).child('posts');
         dbPostRef.on('child_added', snapshot => {
-            let post = snapshot.toJSON()
-            console.warn(post)
-              if (!imgURLs.includes(post)) {
-                imgURLs.push(post)
-                // console.warn('Bild pushad!')
-              } else {
-                // console.warn('Bilden finns!')
-              }
+          let post = snapshot.toJSON()
+          if (!imgURLs.includes(post)) {
+            imgURLs.push(post)
+          } else {
+          }
         })
       } else {
         // User not logged in or has just logged out.
       }
     });
-  }
+  };
 
   mapPosts = () => {
 
     let sortedArr = imgURLs.sort((a, b) => b.post > a.post)
     return sortedArr.map((post) => {
-      // console.warn('img array:', imgURLs)
       return <Posts
         key={post.imgURL}
         photo={post.imgURL}
         sound={post.recURL}
-        />
+      />
     })
-  }
+  };
 
   moveToCamera = () => {
     this.setState({ modalVisible: !this.state.modalVisible })
