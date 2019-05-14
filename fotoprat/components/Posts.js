@@ -59,6 +59,7 @@ class Posts extends Component {
   toggleAudioPlayback = () => {
     this.setState({
       isPlaying: !this.state.isPlaying,
+      playButton: !this.state.playButton,
     }, () => (this.state.isPlaying
       ? this.soundObject.playAsync()
       : this.soundObject.stopAsync()));
