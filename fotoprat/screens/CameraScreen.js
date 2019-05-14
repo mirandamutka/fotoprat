@@ -1,11 +1,21 @@
 import React from 'react';
-import { Text, View, Platform } from 'react-native';
-import { Camera, Permissions } from 'expo';
+import {
+  ImageBackground,
+  View,
+  StyleSheet,
+  Platform,
+  Text,
+  TouchableOpacity
+} from 'react-native';
+import {
+  Permissions,
+  ScreenOrientation,
+  ImagePicker,
+  Icon
+} from 'expo';
 
-import { RecordButton } from '../components/Buttons';
+import Colors from '../constants/Colors';
 import style from '../constants/Style';
-
-const DESIRED_RATIO = "1:1";
 
 export default class CameraScreen extends React.Component {
 
@@ -14,72 +24,120 @@ export default class CameraScreen extends React.Component {
   };
 
   state = {
+    image: null,
     hasCameraPermission: null,
-    type: Camera.Constants.Type.back,
-    processing: false
+    hasCameraRollPermission: null
   };
 
-  async componentDidMount() {
+  componentDidMount = async () => {
+    ScreenOrientation.allowAsync(ScreenOrientation.Orientation.ALL);
+  };
+
+  componentWillUnmount = () => {
+    ScreenOrientation.allowAsync(ScreenOrientation.Orientation.PORTRAIT);
+  }
+
+
+  askCameraPermission = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
   };
 
-  snap = async () => {
-    this.setState({ processing: !this.state.processing })
-    if (this.camera) {
-      // console.log('')
-
-      const photo = await this.camera.takePictureAsync()
-
-      this.setState({ photo })
-    }
-    await this.props.navigation.navigate('PhotoPreview', { photo: this.state.photo })
-    this.setState({ processing: !this.state.processing })
+  askCameraRollPermission = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    this.setState({ hasCameraRollPermission: status === 'granted' });
   };
 
-  prepareRatio = async () => {
-    if (Platform.OS === 'android' && this.camera) {
-      const ratios = await this.camera.getSupportedRatiosAsync();
+  openLibrary = async () => {
+    await this.askCameraRollPermission();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: .7,
+    });
+    this.setState({ image: result.uri });
+    {
+      this.state.image &&
+        await this.props.navigation.navigate('Record', { photo: result.uri })
+    }
+  };
 
-      // See if the current device has your desired ratio, otherwise get the maximum supported one
-      // Usually the last element of "ratios" is the maximum supported ratio
-      const ratio = ratios.find((ratio) => ratio === DESIRED_RATIO) || ratios[ratios.length - 1];
-
-      this.setState({ ratio });
+  openCamera = async () => {
+    await this.askCameraPermission();
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: .7,
+    });
+    this.setState({ image: result.uri });
+    {
+      this.state.image &&
+        await this.props.navigation.navigate('Record', { photo: result.uri })
     }
   };
 
   render() {
-    const { hasCameraPermission } = this.state;
-    if (hasCameraPermission === null) {
-      return <View />;
-    } else if (hasCameraPermission === false) {
-      return <Text>No access to camera</Text>;
-    } else {
-      return (
-        <Camera
-          ref={ref => { this.camera = ref; }}
-          style={{ flex: 2 }} type={this.state.type}
-          onCameraReady={this.prepareRatio} // You can only get the supported ratios when the camera is mounted
-          ratio={'1:1'}
-        >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: 'transparent',
-              flexDirection: 'row',
-            }}>
-            <View style={style.captureButtonContainer}>
-              {this.state.processing &&
-                <Text style={style.whiteText}>Taking picture...</Text>
+    let { image } = this.state;
+    return (
+      <ImageBackground
+        source={require('../assets/images/splashbg.png')}
+        style={{
+          flex: 1,
+          width: '100%',
+          height: '100%',
+        }}>
+        <View style={style.modalContainer}>
+          <TouchableOpacity
+            onPress={this.openLibrary}
+          ><Icon.Ionicons
+              name={
+                Platform.OS === 'ios'
+                  ? 'ios-images'
+                  : 'md-images'
               }
-              <RecordButton
-                function={this.snap}
-              />
-            </View>
-          </View>
-        </Camera>
-      );
-    }
+              size={60}
+              color={Colors.orangeColor}
+              style={{ alignSelf: 'center', paddingTop: 15 }}
+            />
+            <Text style={[
+              style.buttonText,
+              {
+                color: Colors.orangeColor,
+                paddingTop: '3%'
+              }
+            ]}
+            >
+              GALLERI
+              </Text>
+          </TouchableOpacity>
+          <View style={style.verticalDivider} />
+          <TouchableOpacity
+            onPress={this.openCamera}
+          >
+            <Icon.Ionicons
+              name={
+                Platform.OS === 'ios'
+                  ? 'ios-camera'
+                  : 'md-camera'
+              }
+              size={75}
+              color={Colors.orangeColor}
+              style={{ alignSelf: 'center', paddingTop: 15 }}
+            />
+            <Text
+              style={[
+                style.buttonText,
+                {
+                  color: Colors.orangeColor,
+                  paddingTop: 0
+                }
+              ]}
+            >
+              KAMERA
+              </Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    );
   }
-}
+};

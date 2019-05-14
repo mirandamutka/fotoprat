@@ -1,6 +1,8 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 import Colors from './Colors.js';
+
+const { width: winWidth, height: winHeight } = Dimensions.get('window');
 
 export default StyleSheet.create({
 
@@ -16,6 +18,14 @@ export default StyleSheet.create({
     width: '100%',
   },
 
+  onboardingContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingTop: 100,
+    backgroundColor: Colors.orangeColor
+  },
+
   roundButtonContainer: {
     alignItems: 'center',
     position: 'relative',
@@ -25,8 +35,18 @@ export default StyleSheet.create({
   rectButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 20
+    marginBottom: 30
   },
+
+  camContainer: {
+    height: winHeight,
+    width: winWidth,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+},
 
   captureButtonContainer: {
     justifyContent: 'flex-end',
@@ -35,10 +55,22 @@ export default StyleSheet.create({
     paddingBottom: 20
   },
 
-  modalContainer: { 
+  modalContainer: {
+    paddingTop: 100,
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    flex: 1
+    flex: 1,
+    flexDirection: 'row'
+  },
+
+  transparentModalContainer: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    backgroundColor: Colors.whiteColor,
+    opacity: .8,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 
   // BUTTON STYLES
@@ -60,7 +92,7 @@ export default StyleSheet.create({
   },
 
   roundButton: {
-    backgroundColor: Colors.purpleColor,
+    backgroundColor: Colors.orangeColor,
     borderRadius: 50,
     height: 63,
     width: 63,
@@ -77,7 +109,7 @@ export default StyleSheet.create({
     paddingLeft: 5
   },
   roundPause: {
-    backgroundColor: Colors.purpleColor,
+    backgroundColor: Colors.orangeColor,
     borderRadius: 50,
     height: 63,
     width: 63,
@@ -95,25 +127,11 @@ export default StyleSheet.create({
   },
 
   rectangularButton: {
-    backgroundColor: Colors.purpleColor,
     width: 147,
     height: 36,
+    marginTop: 20,
     borderRadius: 5,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-  rectangularOrangeButton: {
-    backgroundColor: Colors.orangeColor,
-    width: 135,
-    height: 35,
-    borderRadius: 5,
-    elevation: 3,
+    elevation: 1,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -125,7 +143,7 @@ export default StyleSheet.create({
 
   buttonText: {
     textAlign: 'center',
-    paddingTop: '7%',
+    paddingTop: '6%',
     color: Colors.whiteColor,
     fontWeight: 'bold'
   },
@@ -142,9 +160,28 @@ export default StyleSheet.create({
 
   // TEXT
 
-  whiteText: { 
-    color: 'white', 
-    paddingBottom: 5 
+  whiteText: {
+    color: 'white',
+    paddingBottom: 5
+  },
+
+  recordText: {
+    position: 'absolute',
+    top: 20,
+    left: 80,
+    fontSize: 16
+  },
+
+  registerText: {
+    textAlign: 'center',
+    color: Colors.whiteColor,
+    fontWeight: 'bold'
+  },
+
+  errorText: {
+    color: 'red',
+    padding: 5,
+    fontStyle: 'italic'
   },
 
   // ETC
@@ -155,5 +192,24 @@ export default StyleSheet.create({
     borderBottomColor: '#E0E0E0',
     alignSelf: 'center',
     marginBottom: 20
-  }
+  },
+
+  verticalDivider: {
+    height: 400,
+    width: 2,
+    backgroundColor: Colors.whiteColor,
+    marginBottom: 10
+  },
+
+  onboardInput: {
+    height: 40,
+    width: '90%',
+    borderBottomColor: Colors.darkOrangeColor,
+    borderBottomWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    marginVertical: 20,
+    color: Colors.whiteColor
+  },
+
 });

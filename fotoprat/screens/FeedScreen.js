@@ -4,18 +4,20 @@ import {
   ImageBackground,
   ScrollView,
   View,
-  FlatList,
   Modal,
   Text,
   TouchableOpacity,
   Platform
 } from 'react-native';
 import { Icon } from 'expo';
+import * as firebase from 'firebase';
 
 import Posts from '../components/Posts';
 
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
+
+let imgURLs = []
 
 export default class FeedScreen extends React.Component {
   static navigationOptions = {
@@ -23,7 +25,38 @@ export default class FeedScreen extends React.Component {
   };
 
   state = {
-    modalVisible: true
+    modalVisible: true,
+    postsExist: false
+  };
+
+  readPosts = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      let uid = user.uid
+      if (uid) {
+        let dbPostRef = firebase.database().ref(uid).child('posts');
+        dbPostRef.on('child_added', snapshot => {
+          let post = snapshot.toJSON()
+          if (!imgURLs.includes(post)) {
+            imgURLs.push(post)
+          } else {
+          }
+        })
+      } else {
+        // User not logged in or has just logged out.
+      }
+    });
+  };
+
+  mapPosts = () => {
+
+    let sortedArr = imgURLs.sort((a, b) => b.post > a.post)
+    return sortedArr.map((post) => {
+      return <Posts
+        key={post.imgURL}
+        photo={post.imgURL}
+        sound={post.recURL}
+      />
+    })
   };
 
   moveToCamera = () => {
@@ -34,6 +67,7 @@ export default class FeedScreen extends React.Component {
   render() {
     return (
       <ScrollView>
+        {this.readPosts()}
         {this.state.modalVisible ?
           <Modal
             animationType="slide"
@@ -41,40 +75,61 @@ export default class FeedScreen extends React.Component {
             visible={this.state.modalVisible}
             onRequestClose={() => {
               Alert.alert('Modal has been closed.');
-            }}>
+            }}
+          >
             <ImageBackground
               source={require('../assets/images/splashbg.png')}
               style={{
+                flex: 1,
                 width: '100%',
-                height: '100%'
-              }}
-              resizeMode={'cover'}
-            >
+                height: '100%',
+              }}>
               <View style={style.modalContainer}>
                 <TouchableOpacity
+                  onPress={() => this.setState({ modalVisible: !this.state.modalVisible })}
+                ><Icon.Ionicons
+                    name={
+                      Platform.OS === 'ios'
+                        ? 'ios-paper'
+                        : 'md-paper'
+                    }
+                    size={55}
+                    color={Colors.orangeColor}
+                    style={{ alignSelf: 'center', paddingTop: 15 }}
+                  />
+                  <Text style={[
+                    style.buttonText,
+                    {
+                      color: Colors.orangeColor,
+                      paddingTop: '3%'
+                    }
+                  ]}>SE FLÖDE</Text>
+                </TouchableOpacity>
+                <View style={style.verticalDivider} />
+                <TouchableOpacity
                   onPress={this.moveToCamera}
-                  style={style.cameraButton}
                 >
                   <Icon.Ionicons
                     name={
                       Platform.OS === 'ios'
-                        ? 'ios-camera'
-                        : 'md-camera'
+                        ? 'ios-image'
+                        : 'md-image'
                     }
-                    size={75}
-                    color={Colors.whiteColor}
+                    size={55}
+                    color={Colors.orangeColor}
                     style={{ alignSelf: 'center', paddingTop: 15 }}
                   />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => this.setState({ modalVisible: !this.state.modalVisible })}
-                  style={style.rectangularOrangeButton}
-                >
-                  <Text style={style.buttonText}>SE FLÖDE</Text>
+                  <Text style={[
+                    style.buttonText,
+                    {
+                      color: Colors.orangeColor,
+                      paddingTop: '3%'
+                    }
+                  ]}>TA BILD</Text>
                 </TouchableOpacity>
               </View>
               <Image
-                source={require('../assets/images/logo.png')}
+                source={require('../assets/images/logo_grey.png')}
                 style={{
                   height: 120,
                   width: 100,
@@ -85,22 +140,17 @@ export default class FeedScreen extends React.Component {
             </ImageBackground>
           </Modal>
           :
-          <View>
-            <View style={style.headerContainer}>
-              <Image
-                source={require('../assets/images/logo.png')}
-                style={{
-                  height: 120,
-                  width: 100,
-                  resizeMode: 'contain',
-                  alignSelf: 'center'
-                }}
-              />
-            </View>
-            <FlatList
-              data={[{ key: 'a' }, { key: 'b' }]}
-              renderItem={({ item }) => <Posts />}
+          <View style={style.headerContainer}>
+            <Image
+              source={require('../assets/images/logo_grey.png')}
+              style={{
+                height: 120,
+                width: 100,
+                resizeMode: 'contain',
+                alignSelf: 'center'
+              }}
             />
+            {this.mapPosts()}
           </View>
         }
       </ScrollView>

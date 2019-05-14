@@ -1,21 +1,20 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
-import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { createMaterialTopTabNavigator } from 'react-navigation';
+import { createStackNavigator, createMaterialTopTabNavigator } from 'react-navigation';
+
+import Colors from '../constants/Colors';
 
 import TabBarIcon from '../components/TabBarIcon';
 import FeedScreen from '../screens/FeedScreen';
 import CameraScreen from '../screens/CameraScreen';
-import PhotoPreviewScreen from '../screens/PhotoPreviewScreen';
-import SplashScreen from '../screens/SplashScreen';
+import RecordScreen from '../screens/RecordScreen';
 
 const FeedStack = createStackNavigator({
-  Home: FeedScreen
+  Feed: FeedScreen
 });
 
 FeedStack.navigationOptions = {
-  tabBarLabel: 'Feed',
+  tabBarLabel: 'Flöde',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -28,17 +27,26 @@ FeedStack.navigationOptions = {
   ),
 };
 
-const CameraStack = createStackNavigator({
-  Camera: CameraScreen,
-  PhotoPreview: PhotoPreviewScreen
-});
+const CameraStack = createStackNavigator(
+  {
+    Camera: CameraScreen,
+    Record: RecordScreen
+  },
+  {
+    headerLayoutPreset: 'center',
+  }
+);
 
 CameraStack.navigationOptions = {
-  tabBarLabel: 'Camera',
+  tabBarLabel: 'Kamera',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-camera' : 'md-camera'}
+      name={
+        Platform.OS === 'ios'
+          ? 'ios-camera'
+          : 'md-camera'
+      }
     />
   ),
 };
@@ -48,22 +56,22 @@ export default createMaterialTopTabNavigator({
   CameraStack,
 },
 
-{
-  tabBarOptions: {
-    activeTintColor: '#DC8231',
-    inactiveTintColor: 'grey',
-    style: {
-      backgroundColor: 'white',
-      borderTopWidth: 0.2,
-      borderTopColor: 'grey'
+  {
+    tabBarOptions: {
+      activeTintColor: Colors.darkOrangeColor,
+      inactiveTintColor: Colors.greyColor,
+      style: {
+        backgroundColor: 'white',
+        borderTopWidth: 0.2,
+        borderTopColor: Colors.greyColor
+      },
+      indicatorStyle: {
+        height: 0
+      },
+      showLabel: false,
+      showIcon: true
     },
-    indicatorStyle: {
-      height: 0
-    },
-    showLabel: false,
-    showIcon: true
+    swipeEnabled: true,
+    tabBarPosition: 'bottom'
   },
-  swipeEnabled: true,
-  tabBarPosition: 'bottom'
-},
 );
