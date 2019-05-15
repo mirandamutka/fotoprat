@@ -92,7 +92,7 @@ class RecordScreen extends Component {
     });
   };
 
-  uploadPostAsync = async (photoURI, soundURI, uid) => {
+  uploadPostAsync = async (photo, soundURI, uid) => {
     const blobPHOTO = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -103,7 +103,7 @@ class RecordScreen extends Component {
         reject(new TypeError('Network request failed'));
       };
       xhr.responseType = 'blob';
-      xhr.open('GET', photoURI, true);
+      xhr.open('GET', photo, true);
       xhr.send(null);
     });
     let date = () => {
@@ -157,12 +157,11 @@ class RecordScreen extends Component {
     const ready = await firebase.database().ref(uid).child('posts/').push({
       imgURL: imgURL,
       recURL: recURL
-
     })
 
     if (ready) {
-      this.props.navigation.navigate('Feed')
       this.setState({ isVisible: false })
+      this.props.navigation.navigate('Feed')
     } else {
     }
   };
@@ -187,7 +186,7 @@ class RecordScreen extends Component {
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       playThroughEarpieceAndroid: true
     });
-    const { sound, status } = await this.recording.createNewLoadedSoundAsync(
+    const { sound } = await this.recording.createNewLoadedSoundAsync(
       {
         isLooping: true
       },
@@ -200,11 +199,10 @@ class RecordScreen extends Component {
 
 
     firebase.auth().onAuthStateChanged((user) => {
-      let photoURI = photo
       let soundURI = soundInfo.uri
       let uid = user.uid
       if (uid) {
-        this.uploadPostAsync(photoURI, soundURI, uid);
+        this.uploadPostAsync(photo, soundURI, uid);
       } else {
         // User not logged in or has just logged out.
       }

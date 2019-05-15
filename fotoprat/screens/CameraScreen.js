@@ -58,7 +58,7 @@ export default class CameraScreen extends React.Component {
     this.setState({ image: result.uri });
     {
       this.state.image &&
-        await this.props.navigation.navigate('Record', { photo: result.uri })
+        await this.props.navigation.navigate('Record', { photo: this.state.image })
     }
   };
 
@@ -72,12 +72,11 @@ export default class CameraScreen extends React.Component {
     this.setState({ image: result.uri });
     {
       this.state.image &&
-        await this.props.navigation.navigate('Record', { photo: result.uri })
+        await this.props.navigation.navigate('Record', { photo: this.state.image })
     }
   };
 
   render() {
-    let { image } = this.state;
     return (
       <ImageBackground
         source={require('../assets/images/splashbg.png')}

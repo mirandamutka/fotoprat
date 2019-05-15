@@ -17,7 +17,7 @@ import Posts from '../components/Posts';
 import Colors from '../constants/Colors';
 import style from '../constants/Style';
 
-let imgURLs = []
+let postURLS = []
 
 export default class FeedScreen extends React.Component {
   static navigationOptions = {
@@ -29,6 +29,10 @@ export default class FeedScreen extends React.Component {
     postsExist: false
   };
 
+  componentDidMount = () => {
+    this.readPosts();
+  };
+
   readPosts = () => {
     firebase.auth().onAuthStateChanged((user) => {
       let uid = user.uid
@@ -36,8 +40,8 @@ export default class FeedScreen extends React.Component {
         let dbPostRef = firebase.database().ref(uid).child('posts');
         dbPostRef.on('child_added', snapshot => {
           let post = snapshot.toJSON()
-          if (!imgURLs.includes(post)) {
-            imgURLs.push(post)
+          if (!postURLS.includes(post)) {
+            postURLS.push(post)
           } else {
           }
         })
@@ -48,8 +52,7 @@ export default class FeedScreen extends React.Component {
   };
 
   mapPosts = () => {
-
-    let sortedArr = imgURLs.sort((a, b) => b.post > a.post)
+    let sortedArr = postURLS.sort((a, b) => b.post > a.post)
     return sortedArr.map((post) => {
       return <Posts
         key={post.imgURL}
@@ -67,7 +70,6 @@ export default class FeedScreen extends React.Component {
   render() {
     return (
       <ScrollView>
-        {this.readPosts()}
         {this.state.modalVisible ?
           <Modal
             animationType="slide"
